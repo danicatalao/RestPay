@@ -4,6 +4,6 @@ namespace RestPay.Repositories
 {
 	public interface ITransactionRepository
 	{
-		public Task InsertTransaction(string from, string to, decimal value);
+		public Task<bool> TransferAsync(string payerId, string payeeId, decimal value);
 	}
 }

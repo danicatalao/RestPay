@@ -5,6 +5,5 @@ namespace RestPay.Repositories
 {
 	public interface IUserRepository
 	{
-		public Task<bool> TransferAsync(string payerId, string payeeId, decimal value);
 	}
 }
