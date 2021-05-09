@@ -38,16 +38,6 @@ namespace RestPay
 
 			services.AddTransient<ITransactionService, TransactionService>();
 
-			BsonClassMap.RegisterClassMap<User>(cm => {
-				cm.AutoMap();
-				cm.SetIsRootClass(true);
-
-				var featureType = typeof(User);
-				featureType.Assembly.GetTypes()
-					.Where(type => featureType.IsAssignableFrom(type)).ToList()
-					.ForEach(type => cm.AddKnownType(type));
-			});
-
 			services.AddControllers();
 		}
 

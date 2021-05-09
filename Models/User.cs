@@ -4,6 +4,8 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace RestPay.Models
 {
 	[BsonIgnoreExtraElements]
+	[BsonDiscriminator(RootClass = true)]
+	[BsonKnownTypes(typeof(NormalPerson), typeof(LegalPerson))]
 	public class User
 	{
 		[BsonId]
