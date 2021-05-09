@@ -33,7 +33,7 @@ namespace RestPay.Repositories
 				{
 					var withdrawResult = await _users.UpdateOneAsync(session, user => user.Id == payerId, Builders<User>.Update.Inc<Decimal>("Wallet", -value));
 					var depositResult = await _users.UpdateOneAsync(session, user => user.Id == payeeId, Builders<User>.Update.Inc<Decimal>("Wallet", value));
-					var isPayerWalletValid = IsWalletValid(payerId);
+					var isPayerWalletValid = IsWalletValid(session, payerId);
 					await InsertTransaction(payerId, payeeId, value);
 					if (!withdrawResult.IsAcknowledged || !depositResult.IsAcknowledged || !isPayerWalletValid)
 					{
@@ -45,7 +45,7 @@ namespace RestPay.Repositories
 					throw new Exception();
 				}
 			}
-			catch (Exception e)
+			catch (Exception /*e*/)
 			{
 				await session.AbortTransactionAsync();
 				return false;
@@ -66,9 +66,9 @@ namespace RestPay.Repositories
 			return balance >= value;
 		}
 
-		private bool IsWalletValid(string id)
+		private bool IsWalletValid(IClientSessionHandle session, string id)
 		{
-			var balance = _users.Find(user => user.Id == id).First().Wallet;
+			var balance = _users.Find(session, user => user.Id == id).First().Wallet;
 			return balance >= 0;
 		}
 
