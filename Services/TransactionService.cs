@@ -2,6 +2,9 @@
 using RestPay.Dtos;
 using RestPay.Models;
 using RestPay.Repositories;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace RestPay.Services
@@ -11,19 +14,28 @@ namespace RestPay.Services
 		private readonly ITransactionRepository _transactionRepository;
 		private readonly IUserRepository _userRepository;
 		private readonly string _transactionAuthenticatorApi;
+		private readonly IHttpClientFactory _clientFactory;
 
-		public TransactionService(ITransactionRepository transactionRepository, IUserRepository userRepository, ITransactionAuthenticatorSettings transactionAuthenticatorSettings)
+		public TransactionService
+		(
+			ITransactionRepository transactionRepository, 
+			IUserRepository userRepository, 
+			ITransactionAuthenticatorSettings transactionAuthenticatorSettings, 
+			IHttpClientFactory clientFactory
+		)
 		{
 			_transactionRepository = transactionRepository;
 			_userRepository = userRepository;
 			_transactionAuthenticatorApi = transactionAuthenticatorSettings.ApiUrl;
+			_clientFactory = clientFactory;
 		}
 
 		public async Task<bool> Transfer(TransactionDto transaction)
 		{
+			var isTransactionAuthorized = await AuthenticateTransactionAsync(transaction.Payer, transaction.Payee, transaction.Value);
 			var isPayerValid = IsPayerValidAsync(transaction.Payer);
 			var isPayeeValid = IsPayeeValid(transaction.Payee);
-			if (isPayerValid && isPayeeValid)
+			if (isTransactionAuthorized && isPayerValid && isPayeeValid)
 			{
 				return await _transactionRepository.TransferAsync(transaction.Payer, transaction.Payee, transaction.Value);
 			}
@@ -33,23 +45,37 @@ namespace RestPay.Services
 			}
 		}
 
-		private bool AuthenticateTransaction(User payer, User payee, decimal value)
+		private async Task<bool> AuthenticateTransactionAsync(string payer, string payee, decimal value)
 		{
-			
+			var response = await PostAuthenticator(payer, payee, value);
+			if (response.IsSuccessStatusCode)
+			{
+				using var responseStream = await response.Content.ReadAsStreamAsync();
+				var responseDto = await JsonSerializer.DeserializeAsync<TransactionAuthenticationDto>(responseStream);
+				if (responseDto.message.Equals("Autorizado"))
+				{
+					return true;
+				}
+			}
 			return false;
+		}
+
+		private async Task<HttpResponseMessage> PostAuthenticator(string payer, string payee, decimal value)
+		{
+			var body = new StringContent
+			(
+				JsonSerializer.Serialize(new TransactionDto { Payer = payer, Payee = payee, Value = value }),
+				Encoding.UTF8,
+				"application/json"
+			);
+			var client = _clientFactory.CreateClient();
+			return await client.PostAsync(_transactionAuthenticatorApi, body);
 		}
 
 		private bool IsPayerValidAsync(string id)
 		{
 			var user = _userRepository.GetNormalPerson(id);
-			if (user is null)
-			{
-				return false;
-			}
-			else
-			{
-				return true;
-			}
+			return !(user is null);
 		}
 
 		private bool IsPayeeValid(string Payee)
