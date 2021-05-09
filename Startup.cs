@@ -34,6 +34,8 @@ namespace RestPay
 
 			services.AddSingleton<IUserRepository, UserRepository>();
 
+			services.AddSingleton<ITransactionRepository, TransactionRepository>();
+
 			services.AddTransient<ITransactionService, TransactionService>();
 
 			BsonClassMap.RegisterClassMap<User>(cm => {
