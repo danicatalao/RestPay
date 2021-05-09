@@ -13,19 +13,27 @@ namespace RestPay.Repositories
 
 		private readonly IMongoDatabase _database;
 
-		private readonly IMongoCollection<NormalPerson> _normalPersons;
-
-		private readonly IMongoCollection<LegalPerson> _legalPersons;
-
 		private readonly IMongoCollection<User> _users;
 
 		public UserRepository(IRestPayDatabaseSettings settings)
 		{
 			_client = new MongoClient(settings.ConnectionString);
 			_database = _client.GetDatabase(settings.DatabaseName);
-			_normalPersons = _database.GetCollection<NormalPerson>(settings.UserCollectionName);
-			_legalPersons = _database.GetCollection<LegalPerson>(settings.UserCollectionName);
 			_users = _database.GetCollection<User>(settings.UserCollectionName);
+		}
+
+		public NormalPerson GetNormalPerson(string id)
+		{
+			var query = _users.AsQueryable<User>().OfType<NormalPerson>().Where(user => user.Id == id);
+			var a = query.ToList();
+			return query.FirstOrDefault();
+		}
+
+		public LegalPerson GetLegalPerson(string id)
+		{
+			var query = _users.AsQueryable<User>().OfType<LegalPerson>().Where(user => user.Id == id);
+			var a = query.ToList();
+			return query.FirstOrDefault();
 		}
 	}
 }

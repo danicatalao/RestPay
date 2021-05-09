@@ -5,5 +5,8 @@ namespace RestPay.Repositories
 {
 	public interface IUserRepository
 	{
+		public NormalPerson GetNormalPerson(string id);
+
+		public LegalPerson GetLegalPerson(string id);
 	}
 }
