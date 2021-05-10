@@ -16,10 +16,18 @@ namespace RestPay.Controllers
 
 		private readonly ITransactionService _transactionService;
 
-		public TransactionController(ILogger<TransactionController> logger, ITransactionService transactonService)
+		private readonly INotificationService _notificationService;
+
+		public TransactionController
+		(
+			ILogger<TransactionController> logger,
+			ITransactionService transactonService,
+			INotificationService notificationService
+		)
 		{
 			_logger = logger;
 			_transactionService = transactonService;
+			_notificationService = notificationService;
 		}
 
 		[HttpPost]
@@ -28,6 +36,7 @@ namespace RestPay.Controllers
 			var success = await _transactionService.Transfer(transaction);
 			if (success)
 			{
+				await _notificationService.DispatchDepositNotification(transaction.Payee, transaction.Value);
 				return Ok();
 			}
 			else
