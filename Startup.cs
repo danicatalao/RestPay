@@ -4,11 +4,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using MongoDB.Bson.Serialization;
 using RestPay.Models;
 using RestPay.Repositories;
 using RestPay.Services;
-using System.Linq;
+using Swashbuckle.Swagger;
 
 namespace RestPay
 {
@@ -40,6 +39,16 @@ namespace RestPay
 			services.AddTransient<INotificationService, NotificationService>();
 
 			services.AddControllers();
+
+			services.AddSwaggerGen(c =>
+			{
+				c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+				{
+					Title = "Respay API",
+					Version = "v1",
+					Description = "API RESTfull para transações financeiras",
+				});
+			});
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,6 +68,12 @@ namespace RestPay
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllers();
+			});
+
+			app.UseSwagger();
+			app.UseSwaggerUI(c =>
+			{
+				c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
 			});
 		}
 	}
