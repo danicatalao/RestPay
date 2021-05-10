@@ -71,6 +71,5 @@ namespace RestPay.Repositories
 			var balance = _users.Find(session, user => user.Id == id).First().Wallet;
 			return balance >= 0;
 		}
-
 	}
 }

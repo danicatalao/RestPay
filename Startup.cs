@@ -37,6 +37,7 @@ namespace RestPay
 			services.AddSingleton<ITransactionRepository, TransactionRepository>();
 
 			services.AddTransient<ITransactionService, TransactionService>();
+			services.AddTransient<INotificationService, NotificationService>();
 
 			services.AddControllers();
 		}
