@@ -26,11 +26,11 @@ namespace RestPay
 		{
 			services.AddHttpClient();
 
-			services.Configure<RestPayDatabaseSettings>(Configuration.GetSection(nameof(RestPayDatabaseSettings)));
+			services.Configure<MongoDBSettings>(Configuration.GetSection(nameof(MongoDBSettings)));
 			services.Configure<TransactionAuthenticatorSettings>(Configuration.GetSection(nameof(TransactionAuthenticatorSettings)));
 			services.Configure<NotificationSettings>(Configuration.GetSection(nameof(NotificationSettings)));
 
-			services.AddSingleton<IRestPayDatabaseSettings>(sp => sp.GetRequiredService<IOptions<RestPayDatabaseSettings>>().Value);
+			services.AddSingleton<IMongoDBSettings>(sp => sp.GetRequiredService<IOptions<MongoDBSettings>>().Value);
 			services.AddSingleton<ITransactionAuthenticatorSettings>(sp => sp.GetRequiredService<IOptions<TransactionAuthenticatorSettings>>().Value);
 			services.AddSingleton<INotificationSettings>(sp => sp.GetRequiredService<IOptions<NotificationSettings>>().Value);
 			services.AddSingleton<IUserRepository, UserRepository>();

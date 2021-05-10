@@ -15,7 +15,7 @@ namespace RestPay.Repositories
 
 		private readonly IMongoCollection<User> _users;
 
-		public TransactionRepository(IRestPayDatabaseSettings settings)
+		public TransactionRepository(IMongoDBSettings settings)
 		{
 			_client = new MongoClient(settings.ConnectionString);
 			_database = _client.GetDatabase(settings.DatabaseName);

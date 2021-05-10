@@ -12,7 +12,7 @@ namespace RestPay.Repositories
 
 		private readonly IMongoCollection<User> _users;
 
-		public UserRepository(IRestPayDatabaseSettings settings)
+		public UserRepository(IMongoDBSettings settings)
 		{
 			_client = new MongoClient(settings.ConnectionString);
 			_database = _client.GetDatabase(settings.DatabaseName);
