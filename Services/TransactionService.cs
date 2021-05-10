@@ -16,6 +16,8 @@ namespace RestPay.Services
 		private readonly string _transactionAuthenticatorApi;
 		private readonly IHttpClientFactory _clientFactory;
 
+		private const string AUTHENTICATE_SUCCESS_MESSAGE = "Autorizado";
+
 		public TransactionService
 		(
 			ITransactionRepository transactionRepository, 
@@ -52,7 +54,7 @@ namespace RestPay.Services
 			{
 				using var responseStream = await response.Content.ReadAsStreamAsync();
 				var responseDto = await JsonSerializer.DeserializeAsync<TransactionAuthenticationDto>(responseStream);
-				if (responseDto.message.Equals("Autorizado"))
+				if (responseDto.message.Equals(AUTHENTICATE_SUCCESS_MESSAGE))
 				{
 					return true;
 				}
