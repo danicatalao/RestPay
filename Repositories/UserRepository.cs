@@ -1,9 +1,6 @@
-﻿using MongoDB.Bson;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using RestPay.Models;
-using System;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace RestPay.Repositories
 {
@@ -20,6 +17,11 @@ namespace RestPay.Repositories
 			_client = new MongoClient(settings.ConnectionString);
 			_database = _client.GetDatabase(settings.DatabaseName);
 			_users = _database.GetCollection<User>(settings.UserCollectionName);
+		}
+
+		public string GetUserEmail(string id)
+		{
+			return _users.Find(user => user.Id == id).First().Email;
 		}
 
 		public NormalPerson GetNormalPerson(string id)
