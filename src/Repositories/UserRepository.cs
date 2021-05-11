@@ -33,7 +33,6 @@ namespace RestPay.Repositories
 					var withdrawResult = await _users.UpdateOneAsync(session, user => user.Id == payerId, Builders<User>.Update.Inc<Decimal>("Wallet", -value));
 					var depositResult = await _users.UpdateOneAsync(session, user => user.Id == payeeId, Builders<User>.Update.Inc<Decimal>("Wallet", value));
 					var isPayerWalletValid = IsWalletValid(session, payerId);
-					await InsertTransaction(payerId, payeeId, value);
 					if (!withdrawResult.IsAcknowledged || !depositResult.IsAcknowledged || !isPayerWalletValid)
 					{
 						throw new Exception();

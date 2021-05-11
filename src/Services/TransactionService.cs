@@ -1,6 +1,7 @@
 ﻿using RestPay.Dtos;
 using RestPay.Models;
 using RestPay.Repositories;
+using System;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -38,7 +39,17 @@ namespace RestPay.Services
 			var isPayeeValid = IsPayeeValid(transaction.Payee);
 			if (isTransactionAuthorized && isPayerValid && isPayeeValid)
 			{
-				return await _transactionRepository.TransferAsync(transaction.Payer, transaction.Payee, transaction.Value);
+				var transactionCommited = await _userRepository.TransferAsync(transaction.Payer, transaction.Payee, transaction.Value);
+				if (transactionCommited)
+				{
+					try
+					{
+						await _transactionRepository.InsertTransaction(transaction.Payer, transaction.Payee, transaction.Value);
+					}
+					catch(Exception /*e*/)
+					{}
+				}
+				return transactionCommited;
 			}
 			else
 			{
