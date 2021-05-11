@@ -157,7 +157,7 @@ Para popular um servidor distinto com esses mesmos dados, utilize o recurso [Moc
 
 #### Ambiente
 
-Todas as aplicações são levantadas nos seguintes portas:
+As aplicações são levantadas nos seguintes portas:
 - mongo-express: http://localhost:8081/
 - mongo: http://localhost:27017
 - api-server: http://localhost:5000
@@ -193,6 +193,7 @@ Realiza uma transferencia de dinheiro entre 2 usuários.
 - Exemplo de requisição
 
 POST `http://localhost:5000/api/Transaction`
+
 Body:
 ```
 {
@@ -201,13 +202,14 @@ Body:
     "payee" : "609a149c7b5239e87a126bae"
 }
 ```
-Retorn: *Code:* 200
+
+Return: *Code:* 200
 
 
 
 ### Mockusers
 
-Cria índices de unicidade nos campos email, cpf e cnpj e popula uma coleção de usuários ([Mock]()). 
+Cria índices de unicidade nos campos email, cpf e cnpj e popula uma coleção de usuários, descrita em ([Mock](https://github.com/danicatalao/RestPay/blob/main/README.md#montagem-de-ambiente)). 
 
 - URL
 `api/User/Mockusers`
@@ -215,10 +217,15 @@ Cria índices de unicidade nos campos email, cpf e cnpj e popula uma coleção d
 `POST`
 - Resposta de sucesso
   - *Code:* 200
+    - Índices criados e servidor foi populado com sucesso.
 
 - Resposta de erro
   - *Code:* 400
     - Qualquer caso que não foi possível popular a base. Casos prováveis: Host não encontrado; retentativas de popular usuários por esse endpoint (não é permitido devido aos índices únicos em email, cpf e cnpj).
+- Exemplo de requisição
 
+POST `http://localhost:5000/api/User/Mockusers`
+
+Return: *Code:* 200
 
 
