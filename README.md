@@ -6,7 +6,7 @@ Aplicação web feita em ASP.NET Core, utilizando MongoDB para persistências do
 
 ## Especificações
 
-- O sistema possui 2 tipos de usuários, os comuns e lojistas, ambos têm carteira com dinheiro e realizam transferências entre eles. Ambos usuários possuem do nome, e-mail e senha. Além dessas informações, usuários comuns possuem CPF e lojistas possuem CNPJ. CPF/CNPJ e e-mails são únicos no sistema.
+- O sistema possui 2 tipos de usuários, os comuns e lojistas. Ambos têm carteira com dinheiro e realizam transferências entre eles. Ambos usuários possuem nome, e-mail e senha. Além dessas informações, usuários comuns possuem CPF e lojistas possuem CNPJ. CPF/CNPJ e e-mails são únicos no sistema.
 - Usuários podem enviar dinheiro (efetuar transferência) para lojistas e entre usuários.
 - Lojistas só recebem transferências, não enviam dinheiro para ninguém.
 - Transferências são autorizadas por um serviço externo.
@@ -168,11 +168,13 @@ Todas as aplicações são levantadas nos seguintes portas:
 
 ### Transact
 
+Realiza uma transferencia de dinheiro entre 2 usuários.
+
 - URL
 `api/Transaction`
-- Method
+- Método
 `POST`
-- Data Params
+- Parâmetros
 ```
 {
   "value": number($double),
@@ -180,25 +182,43 @@ Todas as aplicações são levantadas nos seguintes portas:
   "payee": string
 }
 ```
-- Success Response
--- Code: 200
+- Resposta de sucesso
+  - *Code:* 200
+    - Transação feita com sucesso.
 
-- Error Response
--- Code: 400
+- Resposta de erro
+  - *Code:* 400
+    - Qualquer caso que não finalizou a transação com sucesso. Casos mais prováveis são: Saldo inválido para transferência; pagador não é um usuário válido para ação; usuários não encontrados; transação finalizou com pagador com saldo negativo.  
+
+- Exemplo de requisição
+
+POST `http://localhost:5000/api/Transaction`
+Body:
+```
+{
+    "value" : 100.00,
+    "payer" : "609a149c7b5239e87a126baa",
+    "payee" : "609a149c7b5239e87a126bae"
+}
+```
+Retorn: *Code:* 200
+
+
 
 ### Mockusers
 
+Cria índices de unicidade nos campos email, cpf e cnpj e popula uma coleção de usuários ([Mock]()). 
+
 - URL
 `api/User/Mockusers`
-- Method
+- Método
 `POST`
-- Success Response
--- Code: 200
+- Resposta de sucesso
+  - *Code:* 200
 
-- Error Response
--- Code: 400
-
-#### Exemplo de requisição
+- Resposta de erro
+  - *Code:* 400
+    - Qualquer caso que não foi possível popular a base. Casos prováveis: Host não encontrado; retentativas de popular usuários por esse endpoint (não é permitido devido aos índices únicos em email, cpf e cnpj).
 
 
 
