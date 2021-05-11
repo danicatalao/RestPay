@@ -7,7 +7,6 @@ using Microsoft.Extensions.Options;
 using RestPay.Models;
 using RestPay.Repositories;
 using RestPay.Services;
-using Swashbuckle.Swagger;
 
 namespace RestPay
 {
@@ -37,6 +36,7 @@ namespace RestPay
 
 			services.AddTransient<ITransactionService, TransactionService>();
 			services.AddTransient<INotificationService, NotificationService>();
+			services.AddTransient<IUserService, UserService>();
 
 			services.AddControllers();
 
