@@ -153,14 +153,50 @@ No arquivo [appsettings.json](https://github.com/danicatalao/RestPay/blob/main/a
 }
 ```
 
-Para popular um servidor distinto, utilize o recurso [LINK]
+Para popular um servidor distinto com esses mesmos dados, utilize o recurso [Mockusers](https://github.com/danicatalao/RestPay/blob/main/README.md#mockusers)
+
+#### Ambiente
+
+Todas as aplicações são levantadas nos seguintes portas:
+- mongo-express: http://localhost:8081/
+- mongo: http://localhost:27017
+- api-server: http://localhost:5000
 
 
 ## Endpoints
 
-### Mockusers
 
 ### Transact
+
+- URL
+`api/Transaction`
+- Method
+`POST`
+- Data Params
+```
+{
+  "value": number($double),
+  "payer": string,
+  "payee": string
+}
+```
+- Success Response
+-- Code: 200
+
+- Error Response
+-- Code: 400
+
+### Mockusers
+
+- URL
+`api/User/Mockusers`
+- Method
+`POST`
+- Success Response
+-- Code: 200
+
+- Error Response
+-- Code: 400
 
 #### Exemplo de requisição
 
