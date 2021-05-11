@@ -1,9 +1,7 @@
-﻿using MongoDB.Bson;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using RestPay.Models;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace RestPay.Repositories
 {
@@ -15,13 +13,11 @@ namespace RestPay.Repositories
 
 		private readonly IMongoCollection<User> _users;
 
-		public UserRepository(IMongoDBSettings settings)
+		public UserRepository(IUserProviderSettings settings)
 		{
 			_client = new MongoClient(settings.ConnectionString);
 			_database = _client.GetDatabase(settings.DatabaseName);
 			_users = _database.GetCollection<User>(settings.UserCollectionName);
-			//CreateIndexes();
-			//MockUsers();
 		}
 
 		public string GetUserEmail(string id)
@@ -43,21 +39,9 @@ namespace RestPay.Repositories
 			return query.FirstOrDefault();
 		}
 
-		private void CreateIndexes()
-		{
-			var emailKey = Builders<User>.IndexKeys.Ascending("email");
-			var socialNumberkeys = Builders<User>.IndexKeys.Ascending("cpf").Ascending("cnpj");
-			var indexOptions = new CreateIndexOptions { Unique = true };
-			var modelList = new List<CreateIndexModel<User>>
-			{
-				new CreateIndexModel<User>(emailKey, indexOptions),
-				new CreateIndexModel<User>(socialNumberkeys, indexOptions)
-			};
-			_users.Indexes.CreateMany(modelList);
-		}
-
 		public void MockUsers()
 		{
+			CreateIndexes();
 			var userList = new List<User>
 			{
 				new NormalPerson()
@@ -110,6 +94,19 @@ namespace RestPay.Repositories
 				}
 			};
 			_users.InsertMany(userList);
+		}
+
+		private void CreateIndexes()
+		{
+			var emailKey = Builders<User>.IndexKeys.Ascending("email");
+			var socialNumberkeys = Builders<User>.IndexKeys.Ascending("cpf").Ascending("cnpj");
+			var indexOptions = new CreateIndexOptions { Unique = true };
+			var modelList = new List<CreateIndexModel<User>>
+			{
+				new CreateIndexModel<User>(emailKey, indexOptions),
+				new CreateIndexModel<User>(socialNumberkeys, indexOptions)
+			};
+			_users.Indexes.CreateMany(modelList);
 		}
 	}
 }
